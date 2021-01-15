@@ -16,16 +16,8 @@ clock = pygame.time.Clock()
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 980
 
-half_screen_height = SCREEN_HEIGHT/2
-half_screen_width = SCREEN_WIDTH/2
-screen_center = (half_screen_width, half_screen_height)
-
 player_size = (10, 125)
 player_speed = 0
-
-ball_size = (30, 30)
-ball_speed_x = 5
-ball_speed_y = 5
 
 bg_color = pygame.Color('grey10')
 obj_color = (175, 175, 175)
@@ -41,11 +33,12 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 class Ball(Rect):
-    x_speed = 5
-    y_speed = 5
+    x_speed = 10
+    y_speed = 10
+    size = (30, 30)
     
-    def __init__(self, position, size):
-        self = Rect(position, size)
+    def __init__(self, position):
+        super().__init__(position, self.size)
 
     def move(self):
         self.x += self.x_speed
@@ -56,23 +49,28 @@ class Ball(Rect):
             self.y_speed *= -1
         if self.left <= 0 or self.right >= SCREEN_WIDTH:
             self.x_speed *= -1
+    
+    def collide(self):
+        if ball.colliderect(player) or ball.colliderect(opponent):
+            self.x_speed *= -1
+
+class Player(Rect):
+    pass
+
 
 
 # -------------
 # Game rectangles
 # -------------
-ball = Ball(
-    (half_screen_width - 15, half_screen_height - 15),
-    ball_size
-)
+ball = Ball((SCREEN_WIDTH/2 - 15, SCREEN_HEIGHT/2 - 15))
 
 player = pygame.Rect(
-    (SCREEN_WIDTH - 20, half_screen_height - 70),
+    (SCREEN_WIDTH - 20, SCREEN_HEIGHT/2 - 70),
     player_size
 )
 
 opponent = pygame.Rect(
-    (10, half_screen_height - 70),
+    (10, SCREEN_HEIGHT/2 - 70),
     player_size
 )
 # -------------
@@ -100,9 +98,7 @@ while True:
                 player_speed -= 7
     ball.move()
     ball.bounce()
-
-    if ball.colliderect(player) or ball.colliderect(opponent):
-        ball_speed_x *= -1
+    ball.collide()
 
     player.y += player_speed
     if player.top <= 0:
@@ -120,12 +116,12 @@ while True:
     pygame.draw.aaline(
         screen,
         obj_color,
-        (half_screen_width, 0),
-        (half_screen_width, SCREEN_HEIGHT)
+        (SCREEN_WIDTH/2, 0),
+        (SCREEN_WIDTH/2, SCREEN_HEIGHT)
     )
 
 
     # Update screen
-    pygame.display.flip()
+    pygame.display.update()
     clock.tick(75)
 # -------------
