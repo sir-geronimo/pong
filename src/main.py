@@ -1,80 +1,72 @@
 import sys
+from typing import List, Union
 import pygame
 from pygame.locals import *
+from constants.window import SCREEN_HEIGHT, SCREEN_WIDTH
+from entities.ball import Ball
+from entities.player import Player
 
 # -------------
 # General setup
 # -------------
 pygame.init()
 clock = pygame.time.Clock()
+
 # -------------
 
 
 # -------------
 # constants
 # -------------
-SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 980
 
 player_size = (10, 125)
-player_speed = 0
 
 bg_color = pygame.Color('grey10')
 obj_color = (175, 175, 175)
+
 # -------------
 
 
 # -------------
 # Setting up main window
 # -------------
-pygame.display.set_caption("My awesome game")
+pygame.display.set_caption("My awesome pong game")
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-
 # -------------
-
-
-class Ball(Rect):
-    x_speed = 10
-    y_speed = 10
-    size = (30, 30)
-
-    def __init__(self, position):
-        super().__init__(position, self.size)
-
-    def move(self):
-        self.x += self.x_speed
-        self.y += self.y_speed
-
-    def bounce(self):
-        if self.top <= 0 or self.bottom >= SCREEN_HEIGHT:
-            self.y_speed *= -1
-        if self.left <= 0 or self.right >= SCREEN_WIDTH:
-            self.x_speed *= -1
-
-    def collide(self):
-        if ball.colliderect(player) or ball.colliderect(opponent):
-            self.x_speed *= -1
-
-
-class Player(Rect):
-    pass
 
 
 # -------------
 # Game rectangles
 # -------------
-ball = Ball((SCREEN_WIDTH / 2 - 15, SCREEN_HEIGHT / 2 - 15))
-
-player = pygame.Rect(
-    (SCREEN_WIDTH - 20, SCREEN_HEIGHT / 2 - 70),
-    player_size
+ball = Ball(
+    position = (SCREEN_WIDTH / 2 - 15, SCREEN_HEIGHT / 2 - 15)
 )
 
-opponent = pygame.Rect(
-    (10, SCREEN_HEIGHT / 2 - 70),
-    player_size
+player = Player(
+    keys = {
+        "up": K_UP,
+        "down": K_DOWN,
+    },
+    position = (SCREEN_WIDTH - 20, SCREEN_HEIGHT / 2 - 70),
+    size = player_size
 )
+
+opponent = Player(
+    keys = {
+        "up": K_w,
+        "down": K_s,
+    },
+    position = (10, SCREEN_HEIGHT / 2 - 70),
+    size = player_size
+)
+
+entities: List[Union[Player, Ball]] = [
+    player,
+    opponent,
+    ball,
+]
+
 # -------------
 
 
@@ -82,31 +74,18 @@ opponent = pygame.Rect(
 # Main loop
 # -------------
 while True:
+    for e in entities:
+        e.update()
+
     for event in pygame.event.get():
         # Quit game
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                player_speed -= 7
-            if event.key == pygame.K_DOWN:
-                player_speed += 7
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_UP:
-                player_speed += 7
-            if event.key == pygame.K_DOWN:
-                player_speed -= 7
     ball.move()
-    ball.bounce()
-    ball.collide()
-
-    player.y += player_speed
-    if player.top <= 0:
-        player.top = 0
-    if player.bottom >= SCREEN_HEIGHT:
-        player.bottom = SCREEN_HEIGHT
+    ball.collide(player)
+    ball.collide(opponent)
 
     # Visuals
     screen.fill(bg_color)
@@ -125,4 +104,5 @@ while True:
     # Update screen
     pygame.display.update()
     clock.tick(75)
+
 # -------------
