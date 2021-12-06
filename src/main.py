@@ -5,6 +5,7 @@ from pygame.locals import *
 from constants.window import SCREEN_HEIGHT, SCREEN_WIDTH
 from entities.ball import Ball
 from entities.player import Player
+from src.constants.window import SCREEN_CENTER
 
 # -------------
 # General setup
@@ -40,25 +41,25 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 # Game rectangles
 # -------------
 ball = Ball(
-    position = (SCREEN_WIDTH / 2 - 15, SCREEN_HEIGHT / 2 - 15)
+    position=(SCREEN_WIDTH / 2 - 15, SCREEN_CENTER - 15)
 )
 
 player = Player(
-    keys = {
+    keys={
         "up": K_UP,
         "down": K_DOWN,
     },
-    position = (SCREEN_WIDTH - 20, SCREEN_HEIGHT / 2 - 70),
-    size = player_size
+    position=(SCREEN_WIDTH - 20, SCREEN_CENTER - 70),
+    size=player_size
 )
 
 opponent = Player(
-    keys = {
+    keys={
         "up": K_w,
         "down": K_s,
     },
-    position = (10, SCREEN_HEIGHT / 2 - 70),
-    size = player_size
+    position=(10, SCREEN_CENTER - 70),
+    size=player_size
 )
 
 entities: List[Union[Player, Ball]] = [

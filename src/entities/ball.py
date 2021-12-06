@@ -5,13 +5,14 @@ from pygame.locals import *
 from constants.window import SCREEN_HEIGHT, SCREEN_WIDTH
 from entities.player import Player
 
+
 class Ball(Rect):
     x_speed: int = 5
     y_speed: int = 5
-    size: Tuple[int, int] = (30, 30)
+    size: Tuple[float, float] = (30, 30)
 
     def __init__(
-        self, position: Tuple[int, int],
+        self, position: Tuple[float, float],
     ) -> None:
         super().__init__(position, self.size)
 
@@ -33,4 +34,3 @@ class Ball(Rect):
         # Check for collision
         if self.colliderect(pad):
             self.x_speed *= -1
-
