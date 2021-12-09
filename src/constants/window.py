@@ -1,3 +1,6 @@
+from typing import Tuple
+
 SCREEN_WIDTH: int = 900
 SCREEN_HEIGHT: int = 720
-SCREEN_CENTER: float = SCREEN_HEIGHT/2
+CENTER_HEIGHT: float = SCREEN_HEIGHT / 2
+CENTER_WIDTH: float = SCREEN_WIDTH / 2
