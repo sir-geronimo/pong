@@ -1,11 +1,12 @@
-import pygame
 from typing import Dict, Tuple
-from pygame.locals import *
+
+import pygame
 
 from constants.window import SCREEN_HEIGHT
+from entities.entity import Entity
 
 
-class Player(Rect):
+class Player(Entity):
     speed = 0
     keys: Dict[str, int] = {}
 
@@ -17,11 +18,11 @@ class Player(Rect):
         super().__init__(position, size)
         self.keys = keys
 
-    def update(self) -> None:
-        self.move()
-        self.checkBoundaries()
+    def __update__(self) -> None:
+        self.__move_around()
+        self.__check_boundaries()
 
-    def move(self) -> None:
+    def __move_around(self) -> None:
         self.speed = 0
         pressed_keys = pygame.key.get_pressed()
 
@@ -32,7 +33,7 @@ class Player(Rect):
 
         self.y += self.speed
 
-    def checkBoundaries(self) -> None:
+    def __check_boundaries(self) -> None:
         if self.top <= 0:
             self.top = 0
 
