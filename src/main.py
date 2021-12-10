@@ -3,6 +3,7 @@ from typing import List, Union, Dict
 
 import pygame
 from pygame.locals import *
+from pygame.mixer import Sound
 from pygame.surface import Surface, SurfaceType
 from pygame.time import Clock
 
@@ -11,6 +12,10 @@ from entities.ball import Ball
 from entities.entity import Entity
 from entities.player import Player
 
+# -------------
+# init
+# -------------
+pygame.mixer.pre_init()
 pygame.init()
 
 
@@ -37,6 +42,7 @@ class Main:
         "player_1": 0,
         "player_2": 0
     }
+    score_sfx: Sound
 
     def __init__(self):
         pygame.display.set_caption("My awesome pong game")
@@ -46,6 +52,7 @@ class Main:
 
         self.is_running = True
         self.__load_entities()
+        self.__load_resources()
 
     def run(self):
         while self.is_running:
@@ -95,17 +102,17 @@ class Main:
             # Continue game
             if event.type == pygame.KEYDOWN:
                 if event.key == K_SPACE:
-                    self.is_paused = False
+                    self.is_paused = not self.is_paused
 
     def __move_ball(self):
         [self.ball.collide(player) for player in self.players.values()]
 
         if self.ball.left <= 0:
             self.points["player_1"] += 1
-            self.__pause()
+            self.score_sfx.play()
         if self.ball.right >= SCREEN_WIDTH:
             self.points["player_2"] += 1
-            self.__pause()
+            self.score_sfx.play()
 
     def __load_entities(self):
         self.ball = Ball(
@@ -149,6 +156,10 @@ class Main:
         )
         centered_text = CENTER_WIDTH - pause_text.get_width()/2
         self.screen.blit(pause_text, (centered_text, CENTER_HEIGHT))
+
+    def __load_resources(self):
+        # Sound Effects
+        self.score_sfx = pygame.mixer.Sound("../resources/sfx/score.wav")
 
 
 if __name__ == "__main__":
