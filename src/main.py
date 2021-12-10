@@ -18,16 +18,20 @@ from entities.player import Player
 pygame.mixer.pre_init()
 pygame.init()
 
+# -------------
+
 
 # -------------
 # constants
 # -------------
-player_size = (10, 125)
+player_size = (10, 120)
 background_color = pygame.Color('grey10')
 primary_color = (175, 175, 175)
 
 font = pygame.font.SysFont('Arial', 32)
 small_font = pygame.font.SysFont('Arial', 24)
+
+# -------------
 
 
 class Main:
@@ -43,9 +47,11 @@ class Main:
         "player_2": 0
     }
     score_sfx: Sound
+    is_win: bool = False
+    goal: int = 10
 
     def __init__(self):
-        pygame.display.set_caption("My awesome pong game")
+        pygame.display.set_caption("Pypong")
 
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
@@ -56,14 +62,21 @@ class Main:
 
     def run(self):
         while self.is_running:
-            if self.is_paused:
-                self.__new_match()
+            # Check for winner
+            for (player, points) in self.points.items():
+                if points == self.goal:
+                    self.is_win = True
+                    self.__show_end_game(player)
 
-            if not self.is_paused:
-                [entity.__update__() for entity in self.entities]
+            if not self.is_win:
+                if self.is_paused:
+                    self.__show_paused_game()
 
-                self.__draw_visuals()
-                self.__move_ball()
+                if not self.is_paused:
+                    [entity.__update__() for entity in self.entities]
+
+                    self.__draw_visuals()
+                    self.__move_ball()
 
             self.__check_events()
             self.clock.tick(75)
@@ -79,13 +92,14 @@ class Main:
             (CENTER_WIDTH, SCREEN_HEIGHT)
         )
 
-        scoreboard = small_font.render(
-            f"{self.points['player_2']}     {self.points['player_1']}",
-            True,
-            primary_color
-        )
-        centered_scoreboard = CENTER_WIDTH - scoreboard.get_width()/2
-        self.screen.blit(scoreboard, (centered_scoreboard, CENTER_HEIGHT))
+        if not self.is_win:
+            scoreboard = small_font.render(
+                f"{self.points['player_2']}     {self.points['player_1']}",
+                True,
+                primary_color
+            )
+            centered_scoreboard = CENTER_WIDTH - scoreboard.get_width() / 2
+            self.screen.blit(scoreboard, (centered_scoreboard, CENTER_HEIGHT))
 
         pygame.draw.ellipse(self.screen, primary_color, self.ball)
 
@@ -102,7 +116,10 @@ class Main:
             # Continue game
             if event.type == pygame.KEYDOWN:
                 if event.key == K_SPACE:
-                    self.is_paused = not self.is_paused
+                    if self.is_win:
+                        self.__new_game()
+                    else:
+                        self.is_paused = not self.is_paused
 
     def __move_ball(self):
         [self.ball.collide(player) for player in self.players.values()]
@@ -147,14 +164,33 @@ class Main:
     def __pause(self):
         self.is_paused = True
 
-    def __new_match(self):
+    def __new_game(self):
+        if not self.is_win:
+            pass
+
+        self.is_win = False
+        for (k, v) in self.points.items():
+            self.points[k] = 0
+
+    def __show_end_game(self, player: str):
+        (_, player_name) = player.capitalize().split("_")
+        new_game_text = font.render(
+            f"Player {player_name} has won!!! \\^o^/",
+            True,
+            primary_color,
+            background_color
+        )
+        centered_text = CENTER_WIDTH - new_game_text.get_width() / 2
+        self.screen.blit(new_game_text, (centered_text, CENTER_HEIGHT))
+
+    def __show_paused_game(self):
         pause_text = font.render(
             "Paused, press space key to continue...",
             True,
             primary_color,
             background_color
         )
-        centered_text = CENTER_WIDTH - pause_text.get_width()/2
+        centered_text = CENTER_WIDTH - pause_text.get_width() / 2
         self.screen.blit(pause_text, (centered_text, CENTER_HEIGHT))
 
     def __load_resources(self):
