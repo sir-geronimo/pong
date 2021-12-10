@@ -38,7 +38,24 @@ class Ball(Entity):
         # Check for collision
         if self.colliderect(pad):
             self.pong_sfx.play()
-            self.x_speed *= -1
+
+            # Heading right
+            if abs(self.right - pad.left) < 10 and self.x_speed > 0:
+                self.x_speed *= -1
+
+            # Heading left
+            if abs(self.left - pad.right) < 10 and self.x_speed < 0:
+                self.x_speed *= -1
+
+            # Heading up
+            if abs(self.top - pad.bottom) < 10 and self.y_speed < 0:
+                self.top = pad.bottom
+                self.y_speed *= -1
+
+            # Heading down
+            if abs(self.bottom - pad.top) < 10 and self.y_speed > 0:
+                self.bottom = pad.top
+                self.y_speed *= -1
 
     def __load_resources(self):
         # Sound Effects
