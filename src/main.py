@@ -51,7 +51,9 @@ class Main:
     goal: int = 10
 
     def __init__(self):
+        icon = pygame.image.load("../resources/images/icon.png")
         pygame.display.set_caption("Pypong")
+        pygame.display.set_icon(icon)
 
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
