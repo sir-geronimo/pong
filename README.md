@@ -42,8 +42,8 @@ TBD
 
 ## 🧪 TODOs / Ideas
 
-[ ] Add power-ups (e.g. speed boost, shrink paddle)
-[ ] Gamepad support
+- [ ] Add power-ups (e.g. speed boost, shrink paddle)
+- [ ] Gamepad support
 
 ## 📄 License
 
